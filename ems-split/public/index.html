@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EMS — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+/* ── LOGIN PAGE ── */
+#loginPage{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;position:relative;z-index:1;
+}
+.login-card{
+  background:var(--glass);
+  backdrop-filter:blur(24px);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:52px 44px;
+  width:420px;max-width:95vw;
+  position:relative;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),0 0 0 1px var(--border);
+  animation:cardIn .6s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.96);}to{opacity:1;transform:none;}}
+.login-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+.login-logo svg{width:38px;height:38px;}
+.login-logo-text{
+  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.login-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:8px;line-height:1.1;}
+.login-sub{color:var(--muted);margin-bottom:36px;font-size:.9rem;}
+.login-tabs{display:flex;gap:0;margin-bottom:32px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.tab-btn{
+  flex:1;padding:10px;background:transparent;border:none;
+  color:var(--muted);font-family:inherit;font-size:.88rem;font-weight:500;
+  cursor:pointer;transition:all .2s;
+}
+.tab-btn.active{background:var(--accent);color:#fff;}
+.login-error{
+  background:rgba(239,71,111,.12);border:1px solid rgba(239,71,111,.3);
+  color:var(--red);border-radius:8px;padding:10px 14px;
+  font-size:.85rem;margin-bottom:16px;display:none;
+}
+.login-error.show{display:block;}
+.login-success{
+  background:rgba(6,214,160,.12);border:1px solid rgba(6,214,160,.3);
+  color:var(--green);border-radius:8px;padding:10px 14px;
+  font-size:.85rem;margin-bottom:16px;display:none;
+}
+.login-success.show{display:block;}
+.btn-primary.full{width:100%;margin-top:8px;font-size:1rem;padding:16px;}
+.login-theme-toggle{position:fixed;top:24px;right:24px;z-index:5;}
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<button class="theme-toggle login-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+</button>
+
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="url(#lg1)"/>
+        <path d="M11 27c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="19" cy="14" r="4" fill="#fff"/>
+        <defs><linearGradient id="lg1" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse"><stop stop-color="#2f6fed"/><stop offset="1" stop-color="#0ea5b8"/></linearGradient></defs>
+      </svg>
+      <span class="login-logo-text">EMS Pro</span>
+    </div>
+
+    <div class="login-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <h1 class="login-title">Welcome back</h1>
+      <p class="login-sub">Sign in to manage your team</p>
+      <div class="login-error" id="loginError"></div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password"/>
+      </div>
+      <button class="btn btn-primary full" onclick="handleLogin()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        Sign In
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:.8rem;color:var(--muted)">Demo: admin / admin123</p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none">
+      <h1 class="login-title">Create account</h1>
+      <p class="login-sub">Register a new admin account</p>
+      <div class="login-error" id="registerError"></div>
+      <div class="login-success" id="registerSuccess"></div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="Choose username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Create password (min 6 chars)"/>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="regConfirm" placeholder="Repeat password"/>
+      </div>
+      <button class="btn btn-primary full" onclick="handleRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+<script>
+API.init();
+
+// Redirect if already logged in
+if (API.token) window.location.href = 'dashboard.html';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) =>
+    b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1))
+  );
+  document.getElementById('loginForm').style.display    = tab==='login' ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? '' : 'none';
+}
+
+function handleLogin() {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  err.classList.remove('show');
+  if (!u||!p) { err.textContent='Fill all fields'; err.classList.add('show'); return; }
+  const res = API.login(u, p);
+  if (res.error) { err.textContent=res.error; err.classList.add('show'); return; }
+  window.location.href = 'dashboard.html';
+}
+
+function handleRegister() {
+  const u = document.getElementById('regUsername').value.trim();
+  const p = document.getElementById('regPassword').value;
+  const c = document.getElementById('regConfirm').value;
+  const err = document.getElementById('registerError');
+  const suc = document.getElementById('registerSuccess');
+  err.classList.remove('show'); suc.classList.remove('show');
+  if (!u||!p||!c) { err.textContent='Fill all fields'; err.classList.add('show'); return; }
+  if (p.length<6)  { err.textContent='Password must be 6+ characters'; err.classList.add('show'); return; }
+  if (p!==c)       { err.textContent='Passwords do not match'; err.classList.add('show'); return; }
+  const res = API.register(u, p);
+  if (res.error) { err.textContent=res.error; err.classList.add('show'); return; }
+  suc.textContent='Account created! You can now login.'; suc.classList.add('show');
+  setTimeout(()=>switchTab('login'), 1500);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+  document.getElementById('loginUsername').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EMS — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div id="app" style="display:flex;min-height:100vh;position:relative;z-index:1;">
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+        </div>
+        <span class="sidebar-logo-text">EMS <span>Pro</span></span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <div class="nav-item" data-page="dashboard" onclick="window.location.href='dashboard.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">People</div>
+        <div class="nav-item" data-page="employees" onclick="window.location.href='employees.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Employees
+          <span class="nav-badge" id="navBadge">0</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-card">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div class="admin-info">
+          <div class="admin-name" id="adminName">Admin</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()" title="Logout">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-actions">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search employees…" oninput="handleSearch(this.value)"/>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Employee
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Employees</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+          <div class="stat-value" id="statDepts">0</div>
+          <div class="stat-label">Departments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="stat-value" id="statAvgSalary">₹0</div>
+          <div class="stat-label">Avg. Salary</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="stat-value" id="statNew">0</div>
+          <div class="stat-label">Added This Month</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Department Split</h3>
+          <div class="chart-sub">Share of total headcount</div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" id="donutChart" viewBox="0 0 180 180"></svg>
+            <div class="donut-legend" id="donutLegend"></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Employees by Department</h3>
+          <div class="chart-sub">Headcount comparison across teams</div>
+          <div class="dept-bars" id="deptBars"></div>
+        </div>
+      </div>
+
+      <!-- RECENT TABLE + ACTIVITY -->
+      <div class="recent-activity-row">
+        <div>
+          <div class="section-header">
+            <div class="section-title">Recent Employees</div>
+            <a href="employees.html" class="btn btn-ghost btn-sm">View All →</a>
+          </div>
+          <div class="table-card">
+            <div class="table-wrapper">
+              <table>
+                <thead><tr>
+                  <th>Employee</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Salary</th>
+                  <th>Actions</th>
+                </tr></thead>
+                <tbody id="recentTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card activity-card">
+          <h3>Recent Activity</h3>
+          <div class="chart-sub">Who did what, and when</div>
+          <div class="activity-feed" id="activityFeed"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ════ SHARED MODALS ════ -->
+
+<!-- Add/Edit Employee -->
+<div class="modal-overlay" id="empModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Employee</div>
+      <button class="modal-close" onclick="closeModal('empModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="photo-upload-row">
+        <div class="photo-preview" id="fPhotoPreview">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="photo-upload-actions">
+          <label class="btn btn-ghost btn-sm" for="fPhotoInput">Upload Photo</label>
+          <input type="file" id="fPhotoInput" accept="image/*" style="display:none" onchange="handlePhotoSelect(this)"/>
+          <button class="btn btn-ghost btn-sm" type="button" id="fPhotoRemoveBtn" onclick="clearPhotoField()" style="display:none">Remove</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Employee ID *</label>
+          <input type="text" id="fId" placeholder="e.g. EMP-001"/>
+          <div class="field-error" id="fIdErr"></div>
+        </div>
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="fName" placeholder="John Doe"/>
+          <div class="field-error" id="fNameErr"></div>
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="fEmail" placeholder="john@company.com"/>
+          <div class="field-error" id="fEmailErr"></div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="fPhone" placeholder="+91 99999 99999"/>
+          <div class="field-error" id="fPhoneErr"></div>
+        </div>
+        <div class="form-group">
+          <label>Department *</label>
+          <select id="fDept">
+            <option value="">Select Department</option>
+            <option>Engineering</option><option>Marketing</option><option>Sales</option>
+            <option>HR</option><option>Finance</option><option>Operations</option><option>Design</option>
+          </select>
+          <div class="field-error" id="fDeptErr"></div>
+        </div>
+        <div class="form-group">
+          <label>Designation *</label>
+          <input type="text" id="fDesig" placeholder="e.g. Software Engineer"/>
+          <div class="field-error" id="fDesigErr"></div>
+        </div>
+        <div class="form-group full">
+          <label>Salary (₹) *</label>
+          <input type="number" id="fSalary" placeholder="e.g. 75000" min="0"/>
+          <div class="field-error" id="fSalaryErr"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('empModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEmployee()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+        Save Employee
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- View Profile -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Employee Profile</div>
+      <button class="modal-close" onclick="closeModal('profileModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="profileBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('profileModal')">Close</button>
+      <button class="btn btn-primary" id="editFromProfile">Edit Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="modal-overlay delete-modal" id="deleteModal">
+  <div class="modal">
+    <div class="modal-body">
+      <div class="delete-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <div class="delete-title">Delete Employee?</div>
+      <p class="delete-desc" id="deleteDesc">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+<script>
+API.init();
+if (!API.token) window.location.href = 'index.html';
+initSidebar('dashboard');
+
+function animateCount(id, target) {
+  const el = document.getElementById(id);
+  let n = 0; const step = Math.max(1, Math.ceil(target/40));
+  const t = setInterval(() => {
+    n = Math.min(n+step, target);
+    el.textContent = n;
+    if (n>=target) clearInterval(t);
+  }, 30);
+}
+
+function loadDashboard() {
+  const stats = API.getStats();
+  animateCount('statTotal', stats.total);
+  animateCount('statDepts', stats.byDept.length);
+  document.getElementById('statAvgSalary').textContent = '₹'+formatNum(Math.round(stats.avgSalary));
+  animateCount('statNew', stats.thisMonth);
+  document.getElementById('navBadge').textContent = stats.total;
+
+  // donut chart
+  renderDonut('donutChart', 'donutLegend', stats.byDept, stats.total);
+
+  // dept bars
+  const bars = document.getElementById('deptBars');
+  bars.innerHTML = '';
+  const max = Math.max(...stats.byDept.map(d=>d.count), 1);
+  stats.byDept.sort((a,b)=>b.count-a.count).forEach((d,i) => {
+    const color = DEPT_COLORS[d._id] || '#8590a8';
+    bars.innerHTML += `
+      <div class="dept-bar-row">
+        <div class="dept-bar-label">${d._id}</div>
+        <div class="dept-bar-track">
+          <div class="dept-bar-fill" style="background:${color}" data-w="${(d.count/max*100).toFixed(1)}%"></div>
+        </div>
+        <div class="dept-bar-count">${d.count}</div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.dept-bar-fill').forEach(el => { el.style.width = el.dataset.w; });
+  }, 100);
+
+  // recent 5 (compact — no phone column)
+  const recent = API.getEmployeeList({ sort:'newest', limit:5 });
+  const tbody = document.getElementById('recentTable');
+  if (!recent.employees.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No employees found</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = recent.employees.map((e,i) => {
+    return `<tr style="animation-delay:${i*0.04}s">
+      <td><div class="emp-cell">
+        ${avatarMarkup(e)}
+        <div><div class="emp-name">${e.name}</div><div class="emp-id">${e.employeeId}</div></div>
+      </div></td>
+      <td><span class="badge" style="background:rgba(47,111,237,.15);color:var(--accent)">${e.department}</span></td>
+      <td>${e.designation}</td>
+      <td>₹${formatNum(e.salary)}</td>
+      <td><div class="actions-cell">
+        <button class="btn btn-ghost btn-icon btn-sm" title="View" onclick="viewProfile('${e._id}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="btn btn-success btn-icon btn-sm" title="Edit" onclick="openEditModal('${e._id}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn btn-danger btn-icon btn-sm" title="Delete" onclick="openDeleteModal('${e._id}','${e.name}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  // activity feed
+  renderActivityFeed('activityFeed', 12);
+}
+
+function handleSearch(v) {
+  // on dashboard, search navigates to employees page with query
+  if (v) window.location.href = `employees.html?q=${encodeURIComponent(v)}`;
+}
+
+// ════════ KEYBOARD SHORTCUTS ════════
+document.addEventListener('keydown', (e) => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  const typing = tag==='input' || tag==='select' || tag==='textarea';
+  if (e.key === '/' && !typing) {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  } else if ((e.key === 'n' || e.key === 'N') && !typing) {
+    e.preventDefault();
+    openAddModal();
+  }
+});
+
+loadDashboard();
+</script>
+</body>
+</html>
